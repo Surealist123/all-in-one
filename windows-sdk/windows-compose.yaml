@@ -1,0 +1,94 @@
+services:
+  # VPN Container for Privacy
+  vpn-privacy:
+    build: ../Containers/vpn
+    container_name: web3-sdk-vpn
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    ports:
+      - "51820:51820/udp"
+      - "53:53/udp"
+    volumes:
+      - vpn_config:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
+    networks:
+      - web3-private-network
+    environment:
+      - VPN_SERVER_IP=${VPN_SERVER_IP:-auto}
+
+  # Web3 Development Environment
+  web3-dev:
+    build: ../Containers/web3-dev
+    container_name: web3-sdk-dev
+    restart: always
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "3000:3000"
+    volumes:
+      - web3_workspace:/workspace
+      - web3_node_modules:/workspace/node_modules
+    networks:
+      - web3-private-network
+    depends_on:
+      - vpn-privacy
+    environment:
+      - NODE_ENV=development
+      - HARDHAT_NETWORK=development
+
+  # Nextcloud AIO Master Container (Optional for file storage)
+  nextcloud-aio-mastercontainer:
+    image: ghcr.io/nextcloud-releases/all-in-one:latest
+    init: true
+    restart: always
+    container_name: nextcloud-aio-mastercontainer
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config
+      - //var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "8443:8443"
+    networks:
+      - web3-private-network
+    depends_on:
+      - vpn-privacy
+    environment:
+      - NEXTCLOUD_DATADIR=/run/desktop/mnt/host/c/web3-sdk-data
+      - NEXTCLOUD_MOUNT=/run/desktop/mnt/host/c/
+      - SKIP_DOMAIN_VALIDATION=true
+      - AIO_DISABLE_BACKUP_SECTION=false
+      - NEXTCLOUD_STARTUP_APPS=deck twofactor_totp tasks calendar contacts notes files_external
+
+  # Privacy-focused DNS resolver
+  dns-privacy:
+    image: cloudflare/cloudflared:latest
+    container_name: web3-sdk-dns
+    restart: always
+    command: proxy-dns --address 0.0.0.0 --port 5300 --upstream https://1.1.1.1/dns-query --upstream https://1.0.0.1/dns-query
+    ports:
+      - "5300:5300/udp"
+    networks:
+      - web3-private-network
+
+networks:
+  web3-private-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer
+  vpn_config:
+    name: web3_vpn_config
+  web3_workspace:
+    name: web3_workspace
+  web3_node_modules:
+    name: web3_node_modules

@@ -1,4 +1,44 @@
 services:
+  # Privacy VPN for Web3 Development (Optional)
+  web3-vpn:
+    build: ./Containers/vpn
+    container_name: nextcloud-aio-vpn
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    ports:
+      - "51820:51820/udp"
+    volumes:
+      - vpn_config:/etc/wireguard
+      - /lib/modules:/lib/modules:ro
+    networks:
+      - nextcloud-aio
+    environment:
+      - VPN_SERVER_IP=${VPN_SERVER_IP:-auto}
+
+  # Web3 Development Environment (Optional)
+  web3-dev:
+    build: ./Containers/web3-dev
+    container_name: nextcloud-aio-web3-dev
+    restart: always
+    ports:
+      - "8545:8545"
+      - "8546:8546"
+      - "3000:3000"
+    volumes:
+      - web3_workspace:/workspace
+    networks:
+      - nextcloud-aio
+    depends_on:
+      - web3-vpn
+    environment:
+      - NODE_ENV=development
+      - HARDHAT_NETWORK=development
+
   nextcloud-aio-mastercontainer:
     image: ghcr.io/nextcloud-releases/all-in-one:latest
     init: true
@@ -7,11 +47,14 @@ services:
     volumes:
       - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # This line is not allowed to be changed as otherwise the built-in backup solution will not work
       - /var/run/docker.sock:/var/run/docker.sock:ro # May be changed on macOS, Windows or docker rootless. See the applicable documentation. If adjusting, don't forget to also set 'WATCHTOWER_DOCKER_SOCKET_PATH'!
-    network_mode: bridge # add to the same network as docker run would do
+    networks:
+      - nextcloud-aio
     ports:
       - 80:80 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
       - 8080:8080
       - 8443:8443 # Can be removed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
+    depends_on:
+      - web3-vpn
     # environment: # Is needed when using any of the options below
       # AIO_DISABLE_BACKUP_SECTION: false # Setting this to true allows to hide the backup section in the AIO interface. See https://github.com/nextcloud/all-in-one#how-to-disable-the-backup-section
       # APACHE_PORT: 11000 # Is needed when running behind a web server or reverse proxy (like Apache, Nginx, Caddy, Cloudflare Tunnel and else). See https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md
@@ -65,7 +108,15 @@ services:
 volumes: # If you want to store the data on a different drive, see https://github.com/nextcloud/all-in-one#how-to-store-the-filesinstallation-on-a-separate-drive
   nextcloud_aio_mastercontainer:
     name: nextcloud_aio_mastercontainer # This line is not allowed to be changed as otherwise the built-in backup solution will not work
+  vpn_config:
+    name: nextcloud_aio_vpn_config
+  web3_workspace:
+    name: nextcloud_aio_web3_workspace
   # caddy_certs:
   # caddy_config:
   # caddy_data:
   # caddy_sites:
+
+networks:
+  nextcloud-aio:
+    name: nextcloud-aio

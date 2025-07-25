@@ -1,0 +1,35 @@
+# .gitignore additions for Web3 SDK
+# Web3 Development
+node_modules/
+.env
+.env.local
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# VPN Keys (should be generated at runtime)
+*.key
+*.pub
+private-keys/
+
+# Local data directories
+web3-sdk-data/
+vpn-config/
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
