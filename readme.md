@@ -1,8 +1,11 @@
-# Nextcloud All-in-One
-The official Nextcloud installation method. Nextcloud AIO provides easy deployment and maintenance with most features included in this one Nextcloud instance. 
+# Nextcloud All-in-One with Private Web3 SDK
+The official Nextcloud installation method enhanced with privacy-focused Web3 development capabilities. Nextcloud AIO now provides easy deployment and maintenance with most features included, plus a complete Web3 development environment with built-in VPN protection.
 
 Included are:
-- Nextcloud
+- Nextcloud (all standard features)
+- **Built-in VPN for Privacy** (WireGuard-based)
+- **Web3 Development Environment** (Hardhat, Truffle, Ganache, Foundry)
+- **Private Blockchain Development** (Ethereum, smart contracts)
 - High performance backend for Nextcloud Files
 - Nextcloud Office (optional)
 - High performance backend for Nextcloud Talk and TURN-server (optional)
@@ -21,6 +24,11 @@ Included are:
 - Update and backup notifications included
 - Daily backups can be enabled from the AIO interface which also allows updating all containers, Nextcloud and its apps afterwards automatically
 - Instance restore from backup archive via the AIO interface included (you only need the archive and the password in order to restore the whole instance on a new AIO instance)
+- **Private Web3 Development SDK** with VPN protection for blockchain development
+- **Built-in WireGuard VPN** for secure, private development environment
+- **Complete Web3 toolchain** including Hardhat, Truffle, Ganache, and Foundry
+- **Windows-optimized deployment** with PowerShell and batch scripts
+- **Privacy-focused DNS** with DNS over HTTPS support
 - APCu as local cache
 - Redis as distributed cache and for file locking
 - Postgresql as database
@@ -79,6 +87,49 @@ Included are:
 | First setup | After installation |
 |---|---|
 | ![image](https://github.com/user-attachments/assets/6ef5d7b5-86f2-402c-bc6c-b633af2ca7dd) | ![image](https://github.com/user-attachments/assets/939d0fdf-436f-433d-82d3-27548263a040) |
+
+## 🚀 Private Web3 Development SDK
+
+This enhanced version of Nextcloud AIO includes a complete, privacy-focused Web3 development environment perfect for blockchain application development on Windows.
+
+### Features
+- **🛡️ Built-in VPN Protection**: WireGuard-based VPN for secure development
+- **🔒 Privacy-First**: All development traffic routed through encrypted VPN
+- **⚡ Complete Web3 Toolchain**: Hardhat, Truffle, Ganache, Foundry, Web3.js, Ethers.js
+- **🪟 Windows Optimized**: PowerShell and batch scripts for easy deployment
+- **🌐 Private Blockchain**: Local Ethereum development environment
+- **📁 Secure Storage**: Optional Nextcloud integration for project files
+
+### Quick Start for Web3 Development
+
+#### Windows SDK (Recommended)
+1. Clone this repository
+2. Navigate to `windows-sdk/` directory
+3. Run `start-sdk.bat` or `./start-sdk.ps1 -Action start`
+4. Access your development environment:
+   - VPN Dashboard: https://localhost:8443
+   - Web3 Development: http://localhost:8545
+   - Nextcloud: https://localhost:443
+
+#### Traditional Docker Compose
+```bash
+# Start with Web3 components
+docker-compose up -d
+
+# Access development container
+docker exec -it nextcloud-aio-web3-dev bash
+
+# Test blockchain connection
+npx hardhat console --network development
+```
+
+### Development Workflow
+1. Write smart contracts in the integrated development environment
+2. Test contracts on the local blockchain (Ganache)
+3. Deploy using Hardhat or Truffle
+4. All traffic secured through VPN for privacy
+
+See the [Windows SDK README](./windows-sdk/README.md) for detailed documentation.
 
 ## How to use this?
 >[!WARNING]
