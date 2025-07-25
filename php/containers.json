@@ -10,7 +10,8 @@
         "nextcloud-aio-talk",
         "nextcloud-aio-nextcloud",
         "nextcloud-aio-notify-push",
-        "nextcloud-aio-whiteboard"
+        "nextcloud-aio-whiteboard",
+        "nextcloud-aio-huggingface"
       ],
       "display_name": "Apache",
       "image": "ghcr.io/nextcloud-releases/aio-apache",
@@ -49,7 +50,8 @@
         "APACHE_MAX_SIZE=%APACHE_MAX_SIZE%",
         "APACHE_MAX_TIME=%NEXTCLOUD_MAX_TIME%",
         "NOTIFY_PUSH_HOST=nextcloud-aio-notify-push",
-        "WHITEBOARD_HOST=nextcloud-aio-whiteboard"
+        "WHITEBOARD_HOST=nextcloud-aio-whiteboard",
+        "HUGGINGFACE_HOST=nextcloud-aio-huggingface"
       ],
       "volumes": [
         {
@@ -882,6 +884,36 @@
         "whiteboard"
       ],
       "read_only": true,
+      "cap_drop": [
+        "NET_RAW"
+      ]
+    },
+    {
+      "container_name": "nextcloud-aio-huggingface",
+      "image_tag": "%AIO_CHANNEL%",
+      "display_name": "Hugging Face AI",
+      "image": "ghcr.io/nextcloud-releases/aio-huggingface",
+      "init": true,
+      "healthcheck": {
+        "start_period": "120s",
+        "test": "/healthcheck.sh",
+        "interval": "30s",
+        "timeout": "30s",
+        "start_interval": "10s",
+        "retries": 3
+      },
+      "expose": [
+        "8000"
+      ],
+      "internal_port": "8000",
+      "environment": [
+        "TZ=%TIMEZONE%",
+        "PORT=8000"
+      ],
+      "restart": "unless-stopped",
+      "profiles": [
+        "huggingface"
+      ],
       "cap_drop": [
         "NET_RAW"
       ]
