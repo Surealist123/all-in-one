@@ -255,7 +255,7 @@ Nextcloud AIO is inspired by projects like Portainer that manage the docker daem
 See [this issue](https://github.com/nextcloud/all-in-one/issues/5251) for a list of feature requests that need help by contributors.
 
 ### How many users are possible?
-Up to 100 users are free, more are possible with [Nextcloud Enterprise](https://nextcloud.com/all-in-one/)
+This open source software can support any number of users. Nextcloud provides community support for up to 100 users, with [Nextcloud Enterprise](https://nextcloud.com/all-in-one/) available for larger deployments requiring commercial support.
 
 ## Network
 
